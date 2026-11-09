@@ -1,0 +1,12 @@
+# Use htpasswd secret provisioned by approved secret manager.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata: {name: admin-basic-auth, namespace: ads}
+spec:
+  targetRefs:
+    - {group: gateway.networking.k8s.io, kind: HTTPRoute, name: ads-admin-api}
+  basicAuth:
+    users:
+      group: ""
+      kind: Secret
+      name: admin-htpasswd

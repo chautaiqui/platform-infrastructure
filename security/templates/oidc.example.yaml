@@ -1,0 +1,13 @@
+# Requires OIDC provider, HTTPS listener, callback URL and client secret.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata: {name: admin-oidc, namespace: ads}
+spec:
+  targetRefs:
+    - {group: gateway.networking.k8s.io, kind: HTTPRoute, name: ads-admin-api}
+  oidc:
+    provider:
+      issuer: https://id.example.internal/realms/ads
+    clientID: CHANGEME
+    clientSecret: {name: admin-oidc-client-secret}
+    redirectURL: https://admin.example.internal/oauth2/callback

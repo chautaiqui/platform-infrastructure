@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: platform-services
+  namespace: argocd
+spec:
+  sourceRepos:
+    - https://git.example.internal/platform/platform-helm-charts.git
+    - https://git.example.internal/platform/service-deployments.git
+  destinations:
+    - namespace: ads
+      server: https://kubernetes.default.svc
+    - namespace: reporting
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - {group: apps, kind: Deployment}
+    - {group: "", kind: Service}
+    - {group: "", kind: ConfigMap}
+    - {group: "", kind: ServiceAccount}
+    - {group: autoscaling, kind: HorizontalPodAutoscaler}
+    - {group: policy, kind: PodDisruptionBudget}
+    - {group: gateway.networking.k8s.io, kind: HTTPRoute}
+    - {group: gateway.networking.k8s.io, kind: GRPCRoute}
+    - {group: gateway.networking.k8s.io, kind: TCPRoute}
+    - {group: gateway.networking.k8s.io, kind: UDPRoute}
+    - {group: gateway.networking.k8s.io, kind: TLSRoute}
+    - {group: gateway.networking.k8s.io, kind: BackendTLSPolicy}
+    - {group: gateway.envoyproxy.io, kind: BackendTrafficPolicy}
+    - {group: gateway.envoyproxy.io, kind: ClientTrafficPolicy}
+    - {group: gateway.envoyproxy.io, kind: SecurityPolicy}
+# Real cluster RBAC must ALSO restrict Argo CD service accounts; an AppProject isn't an admission controller.

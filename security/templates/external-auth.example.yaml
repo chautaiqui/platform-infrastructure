@@ -1,0 +1,11 @@
+# Requires a deployment/service implementing Envoy ext_authz protocol; validate backendRefs schema on v1.9.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata: {name: ext-authz, namespace: ads}
+spec:
+  targetRefs:
+    - {group: gateway.networking.k8s.io, kind: HTTPRoute, name: ads-partner-api}
+  extAuth:
+    grpc:
+      backendRefs:
+        - {name: authorization-service, port: 9000}

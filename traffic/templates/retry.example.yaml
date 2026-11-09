@@ -1,0 +1,10 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata: {name: ads-retry, namespace: ads}
+spec:
+  targetRefs:
+    - {group: gateway.networking.k8s.io, kind: HTTPRoute, name: ads-internal-api}
+  retry:
+    numRetries: 1
+    perRetry: {timeout: 500ms}
+    retryOn: {httpStatusCodes: [502, 503]}

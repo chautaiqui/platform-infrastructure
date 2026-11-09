@@ -1,0 +1,37 @@
+# Production sync intentionally manual: approval/gates are required.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: backend-production
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: [missingkey=error]
+  generators:
+    - git:
+        repoURL: https://git.example.internal/platform/service-deployments.git
+        revision: main
+        files:
+          - path: apps/*/production/app.yaml
+  template:
+    metadata:
+      name: 'prod-{{.service.name}}'
+    spec:
+      project: platform-services
+      sources:
+        - repoURL: https://git.example.internal/platform/platform-helm-charts.git
+          targetRevision: main
+          path: charts/standard-backend
+          helm:
+            releaseName: '{{.service.name}}'
+            valueFiles:
+              - $values/apps/{{.service.name}}/production/values.yaml
+        - repoURL: https://git.example.internal/platform/service-deployments.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{.service.namespace}}'
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true

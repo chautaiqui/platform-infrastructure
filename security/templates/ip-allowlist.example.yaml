@@ -1,0 +1,14 @@
+# Authorization grammar must be validated against the installed CRD (v1.9).
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata: {name: allow-private-cidrs, namespace: ads}
+spec:
+  targetRefs:
+    - {group: gateway.networking.k8s.io, kind: HTTPRoute, name: ads-internal-api}
+  authorization:
+    defaultAction: Deny
+    rules:
+      - name: private-only
+        action: Allow
+        principal:
+          clientCIDRs: [10.0.0.0/8, 172.16.0.0/12]

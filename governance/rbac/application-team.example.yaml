@@ -1,0 +1,15 @@
+# Bind this Role per application namespace, never in infra-gateway.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: app-deployer, namespace: ads}
+rules:
+  - apiGroups: ["", "apps", "autoscaling", "policy"]
+    resources: [services, configmaps, deployments, horizontalpodautoscalers, poddisruptionbudgets]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [gateway.networking.k8s.io]
+    resources: [httproutes, grpcroutes, tcproutes, udproutes, tlsroutes, backendtlspolicies]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [gateway.envoyproxy.io]
+    resources: [backendtrafficpolicies, securitypolicies, clienttrafficpolicies]
+    verbs: [get, list, watch, create, update, patch, delete]
+# No RoleBinding until mapped to approved service account; ClusterRole and Gateway management are withheld.

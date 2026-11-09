@@ -1,0 +1,41 @@
+# All are optional. TCPRoute/UDPRoute/TLSRoute require additional Gateway API CRDs and real backend services.
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata: {name: tcp-gateway, namespace: infra-gateway}
+spec:
+  gatewayClassName: envoy-platform
+  listeners:
+    - name: tcp
+      protocol: TCP
+      port: 15432
+      allowedRoutes:
+        kinds: [{kind: TCPRoute}]
+        namespaces: {from: Selector, selector: {matchLabels: {platform.example/internal-routes: "allowed"}}}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata: {name: udp-gateway, namespace: infra-gateway}
+spec:
+  gatewayClassName: envoy-platform
+  listeners:
+    - name: udp
+      protocol: UDP
+      port: 15353
+      allowedRoutes:
+        kinds: [{kind: UDPRoute}]
+        namespaces: {from: Selector, selector: {matchLabels: {platform.example/internal-routes: "allowed"}}}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata: {name: passthrough-gateway, namespace: infra-gateway}
+spec:
+  gatewayClassName: envoy-platform
+  listeners:
+    - name: tls
+      protocol: TLS
+      port: 15443
+      hostname: passthrough.example.internal
+      tls: {mode: Passthrough}
+      allowedRoutes:
+        kinds: [{kind: TLSRoute}]
+        namespaces: {from: Selector, selector: {matchLabels: {platform.example/internal-routes: "allowed"}}}

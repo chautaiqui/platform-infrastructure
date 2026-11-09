@@ -1,0 +1,24 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: public-https-gateway
+  namespace: infra-gateway
+spec:
+  gatewayClassName: envoy-platform
+  infrastructure:
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: public-proxy
+  listeners:
+    - name: https
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs: [{kind: Secret, name: public-tls}]
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels: {platform.example/public-routes: "allowed"}

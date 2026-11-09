@@ -1,0 +1,14 @@
+# Sample only: NOT included in default kustomization.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata: {name: backend-safety-defaults, namespace: infra-gateway}
+spec:
+  targetRefs:
+    - {group: gateway.networking.k8s.io, kind: Gateway, name: internal-gateway}
+  circuitBreaker:
+    maxParallelRequests: 1000
+    maxPendingRequests: 100
+  retry:
+    numRetries: 1
+    perRetry:
+      timeout: 500ms

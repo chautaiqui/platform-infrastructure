@@ -1,0 +1,18 @@
+# Optional: Kyverno must be installed. Admission denial with background auditing.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: {name: deny-unapproved-envoy-extensions}
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: deny-all-envoy-extension-policy
+      match:
+        any:
+          - resources:
+              kinds:
+                - EnvoyPatchPolicy
+                - EnvoyExtensionPolicy
+      validate:
+        message: "Envoy patch and extension policies are disabled by platform policy."
+        deny: {}

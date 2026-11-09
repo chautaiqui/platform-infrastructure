@@ -1,0 +1,8 @@
+# Merge into Envoy Gateway v1.9 Helm controller values; validate with `helm template` before upgrade.
+config:
+  envoyGateway:
+    rateLimit:
+      backend:
+        type: Redis
+        redis:
+          url: ratelimit-redis.infra-gateway.svc.cluster.local:6379

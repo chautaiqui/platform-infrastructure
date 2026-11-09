@@ -1,0 +1,21 @@
+profiles:
+  public-api:
+    tlsRequired: true
+    authentication: optional
+    rateLimit: tenant-aware
+    timeout: service-slo
+  internal-api:
+    tlsRequired: true
+    authentication: workload-identity
+    rateLimit: service-protection
+    timeout: service-slo
+  partner-api:
+    tlsRequired: true
+    authentication: required
+    audit: required
+    rateLimit: quota-per-partner
+  admin-api:
+    tlsRequired: true
+    authentication: oidc
+    privateNetwork: true
+    audit: required

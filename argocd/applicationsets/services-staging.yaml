@@ -1,0 +1,41 @@
+# Requires Argo CD ApplicationSet controller, chart repository and auth configured.
+# Matrix pairs each service values file with this staging environment.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: backend-staging
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: [missingkey=error]
+  generators:
+    - git:
+        repoURL: https://git.example.internal/platform/service-deployments.git
+        revision: main
+        files:
+          - path: apps/*/staging/app.yaml
+  template:
+    metadata:
+      name: 'stg-{{.service.name}}'
+    spec:
+      project: platform-services
+      sources:
+        - repoURL: https://git.example.internal/platform/platform-helm-charts.git
+          targetRevision: main
+          path: charts/standard-backend
+          helm:
+            releaseName: '{{.service.name}}'
+            valueFiles:
+              - $values/apps/{{.service.name}}/staging/values.yaml
+        - repoURL: https://git.example.internal/platform/service-deployments.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{.service.namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

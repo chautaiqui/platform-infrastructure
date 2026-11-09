@@ -1,0 +1,14 @@
+# Requires Prometheus Operator. Metrics/labels depend on scrape configuration: VERIFY in Prometheus before enabling.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata: {name: envoy-gateway-health, namespace: monitoring}
+spec:
+  groups:
+    - name: envoy-gateway
+      rules:
+        - alert: EnvoyGatewayControllerMetricsMissing
+          expr: absent(up{job=~".*envoy-gateway.*"})
+          for: 5m
+          labels: {severity: warning}
+          annotations:
+            summary: "Envoy Gateway metrics target is missing"

@@ -1,0 +1,9 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata: {name: ads-circuit-breaker, namespace: ads}
+spec:
+  targetRefs:
+    - {group: gateway.networking.k8s.io, kind: HTTPRoute, name: ads-internal-api}
+  circuitBreaker:
+    maxParallelRequests: 200
+    maxPendingRequests: 10

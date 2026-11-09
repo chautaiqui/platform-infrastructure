@@ -1,0 +1,11 @@
+# Requires controller ratelimit.backend Redis and Envoy Ratelimit service.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata: {name: ads-global-limit, namespace: ads}
+spec:
+  targetRefs:
+    - {group: gateway.networking.k8s.io, kind: HTTPRoute, name: ads-partner-api}
+  rateLimit:
+    global:
+      rules:
+        - limit: {requests: 10000, unit: Minute}
